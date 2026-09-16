@@ -1,0 +1,12 @@
+/* Ajuste exclusivo da impressão DUN-14: mantém dimensões físicas da etiqueta. */
+@media print {
+  .print-label { padding: 1mm 1.5mm !important; }
+  .print-label svg {
+    width: calc(100% - 3mm) !important;
+    height: auto !important;
+    max-height: calc(100% - 2mm) !important;
+    flex: none !important;
+    transform: translateX(var(--barcode-offset-x, 2mm)) !important;
+    transform-origin: center center;
+  }
+}
