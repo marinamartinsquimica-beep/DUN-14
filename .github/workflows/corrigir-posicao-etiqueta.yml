@@ -1,0 +1,33 @@
+name: Corrigir posição do DUN-14
+on:
+  push:
+    paths:
+      - .github/workflows/corrigir-posicao-etiqueta.yml
+permissions:
+  contents: write
+jobs:
+  ajustar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ajustar posicionamento horizontal na impressão
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '.print-label svg{width:100%;height:100%;display:block}'
+          new = '.print-label svg{width:100%;height:100%;display:block;transform:translateX(3mm)}'
+          if old not in s:
+              raise SystemExit('CSS esperado não encontrado; nenhuma alteração aplicada')
+          s = s.replace(old, new, 1)
+          s = s.replace('versão de teste 1.0.0', 'versão de teste 1.0.1', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Registrar correção
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix: deslocar código 3 mm à direita na impressão"
+          git push
