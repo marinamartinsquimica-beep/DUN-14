@@ -1,0 +1,38 @@
+name: Ajustar alinhamento DUN-14
+on:
+  push:
+    paths:
+      - '.github/workflows/ajustar-margem.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  corrigir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aplicar ajuste de impressão
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          if 'ajuste-impressao.css' not in s:
+              s=s.replace('<link rel="icon" href="icon.svg" type="image/svg+xml">','<link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="ajuste-impressao.css?v=2">')
+          if 'id="barcode-offset"' not in s:
+              s=s.replace('<label for="quantity">Quantidade de etiquetas</label>','<label for="barcode-offset">Ajuste horizontal do código (mm)</label><input id="barcode-offset" type="number" min="-5" max="6" step="0.5" value="2" inputmode="decimal"><p class="note">Se o código sair à esquerda, aumente este valor. O ajuste desloca apenas as barras e os números, sem mudar o tamanho ou a posição das etiquetas.</p><label for="quantity">Quantidade de etiquetas</label>')
+          s=s.replace("area.replaceChildren();document.querySelector('#print-page')?.remove();", "area.replaceChildren();area.style.setProperty('--barcode-offset-x',Math.max(-5,Math.min(6,Number($('barcode-offset').value)||0))+'mm');document.querySelector('#print-page')?.remove();")
+          s=s.replace('versão de teste 1.0.0','versão de teste 1.0.1')
+          p.write_text(s)
+          sw=Path('sw.js')
+          if sw.exists():
+              t=sw.read_text()
+              if 'ajuste-impressao.css' not in t:
+                  t=t.replace("'./index.html',", "'./index.html','./ajuste-impressao.css',")
+                  t=t.replace('dun14-v1','dun14-v2')
+                  sw.write_text(t)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html sw.js
+          git diff --cached --quiet || (git commit -m 'fix: centralizar código de barras com ajuste horizontal configurável' && git push)
