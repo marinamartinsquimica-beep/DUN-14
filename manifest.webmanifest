@@ -1,0 +1,1 @@
+{"name":"Gerador de Código de Barras DUN-14","short_name":"DUN-14","description":"Gerador ITF-14 com biblioteca de códigos e impressão de etiquetas","start_url":"./","scope":"./","display":"standalone","background_color":"#eef3f6","theme_color":"#254d69","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
