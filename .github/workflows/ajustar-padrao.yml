@@ -1,0 +1,34 @@
+name: Ajustar padroes DUN-14
+on:
+  push:
+    paths:
+      - .github/workflows/ajustar-padrao.yml
+permissions:
+  contents: write
+jobs:
+  ajustar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Atualizar somente os valores iniciais
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<option value="40x30">40 × 30 mm — 2 por fileira</option>'
+          assert s.count(old) == 1
+          s = s.replace(old, '<option value="40x30" selected>40 × 30 mm — 2 por fileira</option>')
+          old = 'id="barcode-offset" type="number" min="-5" max="6" step="0.5" value="2"'
+          assert s.count(old) == 1
+          s = s.replace(old, 'id="barcode-offset" type="number" min="-5" max="6" step="0.5" value="6"')
+          assert 'value="40x30" selected' in s and 'step="0.5" value="6"' in s
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Registrar alteracao
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'fix: iniciar em 40x30 mm e ajuste horizontal 6 mm'
+          git push
