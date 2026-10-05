@@ -6,7 +6,7 @@
     height: auto !important;
     max-height: calc(100% - 2mm) !important;
     flex: none !important;
-    transform: translateX(var(--barcode-offset-x, 2mm)) !important;
+    transform: translate(clamp(-1.5mm, var(--barcode-offset-x, 0mm), 1.5mm), clamp(-5mm, var(--barcode-offset-y, 0mm), 5mm)) !important;
     transform-origin: center center;
   }
 }
