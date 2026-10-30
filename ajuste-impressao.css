@@ -10,3 +10,10 @@
     transform-origin: center center;
   }
 }
+
+/* Correção específica da primeira coluna: +1 mm à direita, sem alterar a segunda. */
+@media print {
+  .print-row .print-label:first-child svg {
+    transform: translate(calc(clamp(-1.5mm, var(--barcode-offset-x, 0mm), 1.5mm) + 1mm), clamp(-5mm, var(--barcode-offset-y, 0mm), 5mm)) !important;
+  }
+}
